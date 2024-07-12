@@ -6,7 +6,7 @@ Pour les données, on charge plusieurs données depuis des seeders (pour les cat
 
 php artisan migrate
 
-php db:seed
+php artisan db:seed
 
 
 
