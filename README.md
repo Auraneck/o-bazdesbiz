@@ -1,8 +1,11 @@
 Pour lancer le projet :
+
 php artisan serve
 
 Pour les données, on charge plusieurs données depuis des seeders (pour les catégories et produits et pour les bons de commandes) :
+
 php artisan migrate
+
 php db:seed
 
 
