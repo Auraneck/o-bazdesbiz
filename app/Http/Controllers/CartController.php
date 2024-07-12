@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Product;
+use App\Models\Order;
 
 class CartController extends Controller
 {
@@ -64,7 +65,7 @@ class CartController extends Controller
     public function checkout(Request $request)
     {
         // Validation des informations de paiement
-        $validated = $request->validate([
+        $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email',
             'address' => 'required|string|max:255',
@@ -72,10 +73,30 @@ class CartController extends Controller
             'card_number' => 'required|regex:/\d{4}-\d{4}-\d{4}-\d{4}/',
             'cvc' => 'required|digits:3',
         ]);
-    
-        // Si validation réussie
+
+        // Création de la commande
+        $order = Order::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'address' => $request->address,
+            'postal_code' => $request->postal_code,
+            'card_number' => $request->card_number,
+            'cvc' => $request->cvc,
+            'handled' => false,
+        ]);
+
+        $cart = $request->session()->get('cart', []);
+
+        foreach ($cart as $id => $details) {
+            $order->products()->attach($id, [
+                'quantity' => $details['quantity'],
+                'price' => $details['price']
+            ]);
+        }
+
+        // Vider le panier après la commande
         $request->session()->forget('cart');
+
         return response()->json(['success' => 'Commande validée avec succès !']);
     }
-    
 }
